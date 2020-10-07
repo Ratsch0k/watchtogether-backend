@@ -9,7 +9,7 @@ var debug = require('debug')('backend:server');
 var http = require('http');
 const { SubscriptionServer } = require('subscriptions-transport-ws');
 const { execute, subscribe } = require('graphql');
-const schema = require('../schema');
+const {schema} = require('../schema');
 
 /**
  * Get port from environment and store in Express.

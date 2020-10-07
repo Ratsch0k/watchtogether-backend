@@ -3,7 +3,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const { HttpError, NotFoundError, InternalServerError } = require('./errors');
 const { graphqlHTTP } = require('express-graphql');
-const schema = require('./schema');
+const {schema} = require('./schema');
 const graphQLPlayground = require('graphql-playground-middleware-express').default;
 
 const app = express();
@@ -39,6 +39,7 @@ app.use(function(req, res, next) {
 });
 
 // error handler
+// eslint-disable-next-line no-unused-vars
 app.use(function(err, req, res, next) {
   if (err instanceof HttpError) {
     res.status(err.statusCode).send(err);
