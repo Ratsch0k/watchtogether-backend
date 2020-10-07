@@ -1,14 +1,20 @@
 version: "3.8"
 services: 
     watchtogether_db:
-      image: redis
+      build:
+        context: .
+        dockerfile: redis.Dockerfile
+      ports:
+        - "6379:6379"
     watchtogether_server:
       build: .
       ports:
         - "8080:8080"
       links: 
-        - watchtogether_db
+        - "watchtogether_db:db"
       depends_on: 
         - watchtogether_db
       environment: 
         - NODE_ENV=production
+        - DEBUG=watchtogether*
+      env_file: .env
