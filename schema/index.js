@@ -1,6 +1,5 @@
 const {GraphQLSchema} = require('graphql');
 
-const CommentType = require('./comment-type');
 const RootQuery = require('./Query');
 const Mutations = require('./Mutations');
 const Subscriptions = require('./Subscriptions');
@@ -14,7 +13,6 @@ const schema = new GraphQLSchema({
 
 module.exports = {
   schema,
-  CommentType,
   RootQuery,
   Mutations,
   Subscriptions,

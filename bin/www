@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('backend:server');
+var debug = require('debug')('watchtogether:server');
 var http = require('http');
 const { SubscriptionServer } = require('subscriptions-transport-ws');
 const { execute, subscribe } = require('graphql');
