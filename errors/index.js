@@ -1,9 +1,7 @@
-const HttpError = require('./error');
-const NotFoundError = require('./not-found-error');
-const InternalServerError = require('./internal-server-error');
+const httpErrors = require('./http');
+const SessionError = require('./session-error');
 
 module.exports = {
-  HttpError,
-  NotFoundError,
-  InternalServerError,
+  ...httpErrors,
+  SessionError,
 };
