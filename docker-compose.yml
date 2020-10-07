@@ -1,0 +1,14 @@
+version: "3.8"
+services: 
+    watchtogether_db:
+      image: redis
+    watchtogether_server:
+      build: .
+      ports:
+        - "8080:8080"
+      links: 
+        - watchtogether_db
+      depends_on: 
+        - watchtogether_db
+      environment: 
+        - NODE_ENV=production
