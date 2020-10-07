@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
+    "prod": "cross-env NODE_ENV=production DEBUG=watchtogether* yarn start",
+    "dev": "cross-env NODE_ENV=development DEBUG=watchtogether* yarn start",
     "lint": "eslint --ext .js"
   },
   "dependencies": {
@@ -13,13 +15,16 @@
     "express-graphql": "^0.11.0",
     "graphql": "^15.3.0",
     "graphql-playground-middleware-express": "^1.7.21",
+    "graphql-redis-subscriptions": "^2.3.1",
     "graphql-subscriptions": "^1.1.0",
     "http-errors": "~1.6.3",
+    "ioredis": "^4.17.3",
     "morgan": "~1.9.1",
     "redis": "^3.0.2",
     "subscriptions-transport-ws": "^0.9.18"
   },
   "devDependencies": {
+    "cross-env": "^7.0.2",
     "eslint": "^7.10.0"
   }
 }
