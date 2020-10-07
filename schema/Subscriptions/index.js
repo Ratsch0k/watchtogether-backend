@@ -1,6 +1,7 @@
 const {GraphQLObjectType} = require('graphql');
 const pubsub = require('../pubsub');
 const CommentType = require('../comment-type');
+const stateChanged = require('./state-changed');
 
 module.exports = new GraphQLObjectType({
   name: 'Subscriptions',
@@ -11,5 +12,6 @@ module.exports = new GraphQLObjectType({
         return pubsub.asyncIterator('commentAdded');
       },
     },
+    stateChanged,
   }
 });

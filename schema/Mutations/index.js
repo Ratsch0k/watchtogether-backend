@@ -2,6 +2,7 @@ const {GraphQLNonNull, GraphQLObjectType, GraphQLString} = require('graphql');
 const pubsub = require('../pubsub');
 const CommentType = require('../comment-type');
 const createSession = require('./create-session');
+const updateSessionState = require('./update-session-state');
 
 module.exports = new GraphQLObjectType({
   name: 'Mutations',
@@ -19,5 +20,6 @@ module.exports = new GraphQLObjectType({
       }
     },
     createSession,
+    updateSessionState,
   },
 });
