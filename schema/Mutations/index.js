@@ -1,6 +1,7 @@
 const {GraphQLNonNull, GraphQLObjectType, GraphQLString} = require('graphql');
 const pubsub = require('../pubsub');
 const CommentType = require('../comment-type');
+const createSession = require('./create-session');
 
 module.exports = new GraphQLObjectType({
   name: 'Mutations',
@@ -16,6 +17,7 @@ module.exports = new GraphQLObjectType({
         pubsub.publish('commentAdded', {commentAdded: {message: args.message}});
         return {message: args.message};
       }
-    }
+    },
+    createSession,
   },
 });

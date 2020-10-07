@@ -5,16 +5,6 @@ const { HttpError, NotFoundError, InternalServerError } = require('./errors');
 const { graphqlHTTP } = require('express-graphql');
 const {schema} = require('./schema');
 const graphQLPlayground = require('graphql-playground-middleware-express').default;
-const config = require('./config');
-
-const redis = require('redis');
-const redisClient = redis.createClient({
-  host: config.REDIS_HOST,
-  port: config.env.REDIS_PORT,
-});
-
-redisClient.on('error', console.error);
-
 
 const app = express();
 

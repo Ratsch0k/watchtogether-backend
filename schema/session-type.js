@@ -1,4 +1,4 @@
-const { GraphQLObjectType, GraphQLNonNull, GraphQLString } = require("graphql/type/definition");
+const { GraphQLObjectType, GraphQLNonNull, GraphQLString } = require("graphql");
 const ControlStateType = require('./control-state-type');
 
 module.exports = new GraphQLObjectType({
