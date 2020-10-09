@@ -11,7 +11,7 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const config = require('./config');
 const passport = require('passport');
-const RedisStore = require('connect-redis')(session);
+const store = require('./session-store');
 
 /**
  * Initialize passport
@@ -51,7 +51,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use(session({
-  store: new RedisStore({client: redisClient.client}),
+  store,
   resave: false,
   secret: config.sessionSecret,
   saveUninitialized: false,

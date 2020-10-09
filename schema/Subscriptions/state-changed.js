@@ -13,9 +13,6 @@ const isUserAuthorized = async (id, password) => {
 
   const session = await client.hmget(id, 'password');
 
-  console.log(id);
-  console.log(password);
-  console.log(session);
   if (session[0] === null || !await bcrypt.compare(password, session[0])) {
     return false;
   }
@@ -47,7 +44,7 @@ const resolve = async (parent, args) => {
 }
 
 module.exports = {
-  type: new GraphQLNonNull(SessionType),
+  type: SessionType,
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),

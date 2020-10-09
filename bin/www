@@ -10,6 +10,8 @@ var http = require('http');
 const { SubscriptionServer } = require('subscriptions-transport-ws');
 const { execute, subscribe } = require('graphql');
 const {schema} = require('../schema');
+const session = require('express-session');
+const sessionStore = require('../session-store');
 
 /**
  * Get port from environment and store in Express.
@@ -33,6 +35,24 @@ server.listen(port,() => {
     execute,
     subscribe,
     schema,
+    onConnect: (connectionParams) => {
+      console.dir(connectionParams);
+      if (connectionParams.sid) {
+        return new Promise((resolve, reject) => {
+          sessionStore.get(connectionParams.sid, (err, session) => {
+            console.dir(err);
+            console.dir(session);
+            if (err) {
+              reject(err);
+            }
+
+            resolve({id: session.id});  
+          });
+        });
+      }
+
+      throw new Error('Missing session id');
+    }
   }, {
     server,
     path: '/subscriptions'
