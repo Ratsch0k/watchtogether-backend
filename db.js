@@ -14,4 +14,5 @@ module.exports = {
   hmget: promisify(client.hmget).bind(client),
   hmset: promisify(client.hmset).bind(client),
   exists: promisify(client.exists).bind(client),
+  del: promisify(client.del).bind(client),
 };
