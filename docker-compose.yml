@@ -6,6 +6,16 @@ services:
         dockerfile: redis.Dockerfile
       ports:
         - "6379:6379"
+    watchtogether_db_admin:
+      image: rediscommander/redis-commander:latest
+      environment:
+      - REDIS_HOSTS=local:db:6379
+      ports:
+      - "8081:8081"
+      links:
+        - "watchtogether_db:db"
+      depends_on: 
+        - watchtogether_db
     watchtogether_server:
       build: .
       ports:
