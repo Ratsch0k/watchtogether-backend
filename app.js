@@ -18,24 +18,20 @@ const passDebug = require('debug')('watchtogether:passport');
  * Initialize passport
  */
 passport.serializeUser(function(session, done) {
-  passDebug('Serialize session: %o', session);
   done(null, session.id);
 });
 
 passport.deserializeUser(function(id, done) {
-  passDebug('Deserialize session: %o', id);
   done(null, {id});
 });
 
 passport.use(new LocalStrategy(
   async (id, password, done) => {
-    passDebug('login: %o, %o', id, password);
     if (!await redisClient.exists(id)) {
       return done(null, false);
     }
-    passDebug('session exists');
 
-    const session = redisClient.hmget(id, 'password');
+    const session = await redisClient.hmget(id, 'password');
     let validPassword;
     try {
       await bcrypt.compare(password, session[0]);
@@ -45,11 +41,9 @@ passport.use(new LocalStrategy(
     }
 
     
-    if (validPassword) {
-      passDebug('password invalid');
+    if (!validPassword) {
       return done(null, false);
     }
-    passDebug('password valid');
 
     return done(null, {id});
   }
