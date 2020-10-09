@@ -3,6 +3,7 @@ const client = require("../../db")
 const ControlPlayingEnum = require("../control-playing-enum");
 const SessionType = require('../session-type');
 const pubsub = require("../pubsub");
+const {SessionError} = require('../../errors');
 
 const checkIfSessionExists = async (id) => {
   return Boolean(await client.exists(id));
@@ -10,7 +11,7 @@ const checkIfSessionExists = async (id) => {
 
 const resolve = async(parent, args) => {
   if (!await checkIfSessionExists(args.id)) {
-    throw new Error('Session doesn\'t exist');
+    throw new SessionError();
   }
 
   // Update session state
