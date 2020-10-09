@@ -12,6 +12,7 @@ class HttpError extends WatchtogetherError {
    * @param {any} detail Optional additional information
    */
   constructor(statusCode, message, detail) {
+    super(message);
     this.statusCode = statusCode;
     this.message = message;
     this.detail = detail;
