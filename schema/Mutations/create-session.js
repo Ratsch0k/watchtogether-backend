@@ -1,20 +1,17 @@
 const { GraphQLNonNull, GraphQLString } = require("graphql");
-const client = require("../../db");
 const SessionType = require("../session-type");
-const uuid = require('uuid');
 const bcrypt = require('bcrypt');
-const passport = require('passport');
+const { CreateSessionError } = require("../../errors");
+const {checkIfIdExists, createSessionID, login} = require('../../util');
+const client = require('../../db');
 
-const createSessionID = () => {
-  return uuid.v4();
-}
-
-const checkIfIdExists = async (id) => {
-  return Boolean(await client.exists(id));
-}
-
+/**
+ * GraphQL resolver.
+ * @param {any} parent  Parent
+ * @param {any} args    Args
+ * @param {any} ctx     Context
+ */
 const resolve = async (parent, args, ctx) => {
-  console.dir(ctx.req.user);
   // Generate uuid and check it if already exists
   let id;
   do {
@@ -23,17 +20,14 @@ const resolve = async (parent, args, ctx) => {
 
   // Hash password
   const hashedPassword = await bcrypt.hash(args.password, 10);
-
   await client.hmset(id, 'password', hashedPassword, 'state', 0);
 
-  await new Promise((resolve, reject) => {
-    // Modify request and put id and password in body
-    ctx.req.body = {
-      username: id,
-      password: args.password,
-    };
-    passport.authenticate('local')(ctx.req, ctx.res, () => resolve());
-  });
+  try {
+    await login(id, args.password, ctx.req);
+  } catch (e) {
+    await client.del(id);
+    throw new CreateSessionError();
+  }
 
   return {
     id,
