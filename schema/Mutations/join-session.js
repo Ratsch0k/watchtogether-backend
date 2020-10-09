@@ -16,14 +16,16 @@ const resolve = async (parent, args, ctx) => {
   const sessionData = await client.hmget(id, 'password', 'state');
   // Check if password is correct
   try {
-    await bcrypt.compare(password, sessionData[0]);
+    if (!await bcrypt.compare(password, sessionData[0])) {
+      throw new JoinSessionError();
+    }
   } catch (e) {
     throw new JoinSessionError();
   }
 
   // Log user in for session
   try {
-    await login(id, password, ctx.req);
+    await login(id, password, ctx);
   } catch (e) {
     throw new JoinSessionError();
   }

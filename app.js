@@ -12,7 +12,6 @@ const session = require('express-session');
 const config = require('./config');
 const passport = require('passport');
 const RedisStore = require('connect-redis')(session);
-const passDebug = require('debug')('watchtogether:passport');
 
 /**
  * Initialize passport
@@ -32,16 +31,11 @@ passport.use(new LocalStrategy(
     }
 
     const session = await redisClient.hmget(id, 'password');
-    let validPassword;
     try {
-      await bcrypt.compare(password, session[0]);
-      validPassword = true;
+      if (!await bcrypt.compare(password, session[0])) {
+        return done(null, false);
+      }
     } catch (e) {
-      validPassword = false;
-    }
-
-    
-    if (!validPassword) {
       return done(null, false);
     }
 
@@ -80,11 +74,10 @@ app.get(
 
 app.use(
   '/graphql',
-  graphqlHTTP((req, res) => ({
+  graphqlHTTP({
     schema,
     graphiql: false,
-    context: {req, res},
-  })),
+  }),
 );
 
 // catch 404 and forward to error handler

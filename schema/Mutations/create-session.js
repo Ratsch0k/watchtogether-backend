@@ -23,7 +23,7 @@ const resolve = async (parent, args, ctx) => {
   await client.hmset(id, 'password', hashedPassword, 'state', 0);
 
   try {
-    await login(id, args.password, ctx.req);
+    await login(id, args.password, ctx);
   } catch (e) {
     await client.del(id);
     throw new CreateSessionError();

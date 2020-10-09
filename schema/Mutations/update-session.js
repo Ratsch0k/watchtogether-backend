@@ -3,31 +3,34 @@ const client = require("../../db")
 const ControlPlayingEnum = require("../control-playing-enum");
 const SessionType = require('../session-type');
 const pubsub = require("../pubsub");
-const {SessionError} = require('../../errors');
+const {SessionError, NoSessionError} = require('../../errors');
+const {checkIfIdExists} = require('../../util');
 
-const checkIfSessionExists = async (id) => {
-  return Boolean(await client.exists(id));
-}
+const resolve = async(parent, args, ctx) => {
+  if (!ctx.user) {
+    throw new NoSessionError();
+  }
 
-const resolve = async(parent, args) => {
-  if (!await checkIfSessionExists(args.id)) {
+  const {id} = ctx.user;
+
+  if (!await checkIfIdExists(id)) {
     throw new SessionError();
   }
 
   // Update session state
-  await client.hmset(args.id, 'state', args.state);
+  await client.hmset(id, 'state', args.state);
   
-  const updateState = await client.hmget(args.id, 'state');
+  const updateState = await client.hmget(id, 'state');
 
   const session = {
-    id: args.id,
+    id,
     control: {
       state: parseInt(updateState[0], 10),
     },
   };
 
   // Publish new state
-  pubsub.publish(args.id, {stateChanged: session});
+  pubsub.publish(id, {stateChanged: session});
 
   return session;
 }
@@ -35,9 +38,6 @@ const resolve = async(parent, args) => {
 module.exports = {
   type: new GraphQLNonNull(SessionType),
   args: {
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
     state: {
       type: new GraphQLNonNull(ControlPlayingEnum),
     },
