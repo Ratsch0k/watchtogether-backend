@@ -10,8 +10,10 @@ var http = require('http');
 const { SubscriptionServer } = require('subscriptions-transport-ws');
 const { execute, subscribe } = require('graphql');
 const {schema} = require('../schema');
-const session = require('express-session');
 const sessionStore = require('../session-store');
+const signature = require('cookie-signature');
+const config = require('../config');
+const sidPrefix = 's:';
 
 /**
  * Get port from environment and store in Express.
@@ -36,17 +38,21 @@ server.listen(port,() => {
     subscribe,
     schema,
     onConnect: (connectionParams) => {
-      console.dir(connectionParams);
       if (connectionParams.sid) {
+        // Parse and validate sid cookie
+        const sidCookie = decodeURIComponent(connectionParams.sid).replace(sidPrefix, '');
+        const sid = signature.unsign(sidCookie, config.sessionSecret);
+        
+        if (sid === false) {
+          throw new Error('Invalid sid');
+        }
+
         return new Promise((resolve, reject) => {
-          sessionStore.get(connectionParams.sid, (err, session) => {
-            console.dir(err);
-            console.dir(session);
+          sessionStore.get(sid, (err, session) => {
             if (err) {
               reject(err);
             }
-
-            resolve({id: session.id});  
+            resolve({id: session.passport.user});  
           });
         });
       }
