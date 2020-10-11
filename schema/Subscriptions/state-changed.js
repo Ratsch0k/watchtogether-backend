@@ -1,41 +1,18 @@
-const { GraphQLNonNull, GraphQLString } = require("graphql");
 const client = require("../../db");
 const pubsub = require("../pubsub");
 const SessionType = require("../session-type");
-const {SessionError} = require('../../errors');
-const bcrypt = require('bcrypt');
 
-const isUserAuthorized = async (id, password) => {
-  // Check if session exists and then if password matches
-  if (!await client.exists(id)) {
-    return false;
-  }
+const subscribe = async (parent, args, ctx) => {
+  const {id} = ctx;
 
-  const session = await client.hmget(id, 'password');
-
-  if (session[0] === null || !await bcrypt.compare(password, session[0])) {
-    return false;
-  }
-
-  return true;
+  return pubsub.asyncIterator(id);
 }
 
-const subscribe = async (parent, args) => {
-  // Check if session exists and then if password matches
-  if (!await isUserAuthorized(args.id, args.password)) {
-    throw new SessionError();
-  }
-
-  return pubsub.asyncIterator(args.id);
-}
-
-const resolve = async (parent, args) => {
-  if (!await isUserAuthorized(args.id, args.password)) {
-    throw new SessionError();
-  }
+const resolve = async (parent, args, ctx) => {
+  const {id} = ctx;
 
   // Get session
-  const session = await client.hmget(args.id, 'id', 'state');
+  const session = await client.hmget(id, 'id', 'state');
 
   return {
     id: session[0],
@@ -47,14 +24,6 @@ const resolve = async (parent, args) => {
 
 module.exports = {
   type: SessionType,
-  args: {
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    password: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-  },
   subscribe,
   resolve,
 }
