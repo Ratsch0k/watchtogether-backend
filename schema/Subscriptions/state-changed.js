@@ -35,11 +35,13 @@ const resolve = async (parent, args) => {
   }
 
   // Get session
-  const session = client.hmget(args.id, 'id', 'state');
+  const session = await client.hmget(args.id, 'id', 'state');
 
   return {
     id: session[0],
-    state: session[1],
+    control: {
+      state: parseInt(session[1], 10),
+    },
   };
 }
 
