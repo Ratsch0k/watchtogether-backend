@@ -12,6 +12,7 @@ const session = require('express-session');
 const config = require('./config');
 const passport = require('passport');
 const store = require('./session-store');
+const cors = require('cors');
 
 /**
  * Initialize passport
@@ -45,6 +46,11 @@ passport.use(new LocalStrategy(
 
 const app = express();
 
+if (process.env.NODE_ENV === 'development') {
+  app.use(cors({
+    credentials: true,
+  }));
+}
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
